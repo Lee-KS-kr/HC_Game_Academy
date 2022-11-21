@@ -17,15 +17,15 @@ namespace Mizu
             // My name is, AlphaGo, Hi
             lList.LogValues();
 
-            //lList.Remove("Hi");
+            lList.Remove("Hi");
             lList.AddFirst("Hello");
             // Hello, My name is, AlphaGo
             lList.LogValues();
 
-            //lList.RemoveFirst();
-            //lList.AddLast("I'm glad to meet you");
+            lList.RemoveFirst();
+            lList.AddLast("I'm glad to meet you");
             // My name is, AlphaGo, I'm glad to meet you
-            //lList.LogValues();
+            lList.LogValues();
         }
     }
 
@@ -134,6 +134,20 @@ namespace Mizu
 
         public bool Remove(T value)
         {
+            LinkedListNode<T> node = First;
+            while (node == Last)
+            {
+                if (EqualityComparer<T>.Default.Equals(node.data, value))
+                {
+                    node.Prev.Next = node.Next;
+                    node.Next.Prev = node.Prev;
+                    --Count;
+
+                    return true;
+                }
+                node = node.Next;
+            }
+
             return false;
         }
         public void Remove(LinkedListNode<T> node)
@@ -146,18 +160,41 @@ namespace Mizu
 
         public void RemoveFirst()
         {
+            if (1 == Count)
+                First = null;
+            else
+            {
+                First = First.Next;
+                First.Prev = null;
+            }
+
             --Count;
 
         }
         public void RemoveLast()
         {
+            if (1 == Count)
+                Last = null;
+            else
+            {
+                Last = Last.Prev;
+                Last.Next = null;
+            }
+
             --Count;
         }
 
         public void Clear()
         {
+            LinkedListNode<T> node = First;
+            while (node == Last)
+            {
+                LinkedListNode<T> next = node.Next;
+                node = default;
+                node = next;
+            }
+
             Count = 0;
         }
-
     }
 }
