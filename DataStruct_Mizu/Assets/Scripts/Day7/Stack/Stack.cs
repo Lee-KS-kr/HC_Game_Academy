@@ -56,8 +56,8 @@ namespace Mizu
 
 		public void Push(T value)
 		{
-			if (EqualityComparer<T>.Default.Equals(value, default(T)))
-				throw new Exception("null값은 추가할 수 없습니다.");
+			//if (EqualityComparer<T>.Default.Equals(value, default(T)))
+			//	throw new Exception("null값은 추가할 수 없습니다.");
 
 			if (Count == _capacity)
 				Expand();

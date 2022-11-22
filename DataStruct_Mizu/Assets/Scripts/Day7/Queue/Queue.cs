@@ -54,8 +54,13 @@ namespace Mizu
 
         public void Enqueue(T value)
         {
-            if (EqualityComparer<T>.Default.Equals(value, default(T)))
-                throw new Exception("null값은 추가할 수 없습니다.");
+            // ref타입의 default는 막을 수 있으나 value타입의 0이 막혀버리는 문제가 발생.
+            //if (EqualityComparer<T>.Default.Equals(value, default(T)))
+            //    throw new Exception("null값은 추가할 수 없습니다.");
+            // 고민의 흔적..
+            //if(!value.GetType().IsValueType)
+            //    if (EqualityComparer<T>.Default.Equals(value, default(T)))
+            //        throw new Exception("null값은 추가할 수 없습니다.");
 
             if (Count == _capacity)
                 Expand();
