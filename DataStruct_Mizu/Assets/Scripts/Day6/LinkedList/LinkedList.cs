@@ -48,13 +48,14 @@ namespace Mizu
         LinkedListNode<T> head = null;
         LinkedListNode<T> tail = null;
 
+        // exception 처리 해주기
         public LinkedListNode<T> First { private set => head = value; get => head; }
         public LinkedListNode<T> Last { private set => tail = value; get => tail; }
 
         public bool Contains(T value)
         {
             LinkedListNode<T> node = First;
-            while(node == Last)
+            while(node != Last)
             {
                 if (EqualityComparer<T>.Default.Equals(node.data, value)) return true;
                 node = node.Next;
@@ -67,7 +68,7 @@ namespace Mizu
         public IEnumerator<T> GetEnumerator()
         {
             LinkedListNode<T> node = First;
-            while (node == Last)
+            while (node != Last)
             {
                 yield return node.data;
                 node = node.Next;
@@ -105,31 +106,35 @@ namespace Mizu
 
         public LinkedListNode<T> AddBefore(LinkedListNode<T> node, T value)
         {
+            // null에 대한 exception 처리 필요
             LinkedListNode<T> newNode = new LinkedListNode<T>(value);
             if (node == First)
                 First = newNode;
 
+            // 여기 구현 잘못됐음 수정하기!
             newNode.Prev = node.Prev;
             newNode.Next = node;
             node.Prev.Next = node;
             node.Prev = newNode;
             ++Count;
 
-            return node;
+            return newNode;
         }
         public LinkedListNode<T> AddAfter(LinkedListNode<T> node, T value)
         {
+            // null에 대한 exception 처리 필요
             LinkedListNode<T> newNode = new LinkedListNode<T>(value);
             if (node == Last)
                 Last = newNode;
 
+            // 여기도 구현 잘못됐음 수정하기!
             newNode.Next = node.Next;
             newNode.Prev = node;
             node.Next.Prev = node;
             node.Next = newNode;
             ++Count;
 
-            return node;
+            return newNode;
         }
 
         public bool Remove(T value)
@@ -161,7 +166,7 @@ namespace Mizu
         public void RemoveFirst()
         {
             if (1 == Count)
-                First = null;
+                First = default;
             else
             {
                 First = First.Next;
@@ -174,7 +179,7 @@ namespace Mizu
         public void RemoveLast()
         {
             if (1 == Count)
-                Last = null;
+                Last = default;
             else
             {
                 Last = Last.Prev;
@@ -186,6 +191,7 @@ namespace Mizu
 
         public void Clear()
         {
+            // 뭔가 잘못됐음 여기도 수정하기
             LinkedListNode<T> node = First;
             while (node == Last)
             {
@@ -194,6 +200,8 @@ namespace Mizu
                 node = next;
             }
 
+            First = default;
+            Last = default;
             Count = 0;
         }
     }

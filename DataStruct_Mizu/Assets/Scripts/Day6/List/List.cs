@@ -1,7 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 
 namespace Mizu
 {
@@ -28,20 +28,34 @@ namespace Mizu
             aList.RemoveAt(0);
             // 4
             Log(aList[aList.Count - 1]);
+
+            aList.Add(9);
+            aList.Insert(-1, 7);
+            aList.Add(87);
+            for (int i = 0; i < aList.Count; i++)
+                Log(aList[i]);
         }
     }
     public sealed class List<T> : IEnumerable<T>
     {
+        // 자료구조는 생성자가 있는 편이 좋다.
         private const int _defaultCapacity = 2;
         private int _capacity = _defaultCapacity;
-        private int _size = 0;
-        public int Count { private set => _size = value; get => _size; }
+        public int Count { private set; get; } = 0;
 
         T[] arr = new T[_defaultCapacity];
         public T this[int index]
         {
-            set => arr[index] = value;
-            get => arr[index];
+            set
+            {
+                if (index > Count || index < 0) throw new Exception("index값이 범위를 벗어납니다.");
+                arr[index] = value;
+            }
+            get
+            {
+                if (index >= Count || index < 0) throw new Exception("index값이 범위를 벗어납니다.");
+                return arr[index];
+            }
         }
 
         public bool Contains(T value)
@@ -58,7 +72,7 @@ namespace Mizu
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         public IEnumerator<T> GetEnumerator()
         {
-            for (int i = 0; i < _size; ++i)
+            for (int i = 0; i < Count; ++i)
                 yield return arr[i];
         }
 
@@ -72,6 +86,9 @@ namespace Mizu
         }
         public void Insert(int index, T value)
         {
+            if (index > Count || index < 0)
+                throw new Exception($"index값이 범위를 벗어납니다.");
+
             if (Count == _capacity)
                 Expand();
 
@@ -84,7 +101,7 @@ namespace Mizu
 
         public bool Remove(T value)
         {
-            for (int i = 0; i < _size; ++i)
+            for (int i = 0; i < Count; ++i)
             {
                 if (EqualityComparer<T>.Default.Equals(this[i], value))
                 {
@@ -97,6 +114,8 @@ namespace Mizu
         }
         public void RemoveAt(int index)
         {
+            if (index >= Count || index < 0)
+                throw new Exception("index 값이 범위를 벗어납니다.");
             for (int i = index; i < Count - 1; ++i)
                 arr[i] = arr[i + 1];
             arr[Count - 1] = default;
@@ -122,6 +141,7 @@ namespace Mizu
             }
 
             arr = temp;
+            // temp 메모리 해제 해주기
         }
     }
 }
