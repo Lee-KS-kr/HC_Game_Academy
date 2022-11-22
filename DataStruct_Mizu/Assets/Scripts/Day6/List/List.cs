@@ -38,12 +38,23 @@ namespace Mizu
     }
     public sealed class List<T> : IEnumerable<T>
     {
-        // 자료구조는 생성자가 있는 편이 좋다.
         private const int _defaultCapacity = 2;
         private int _capacity = _defaultCapacity;
         public int Count { private set; get; } = 0;
 
-        T[] arr = new T[_defaultCapacity];
+        T[] arr;
+
+        // 자료구조는 생성자가 있는 편이 좋다.
+        public List()
+        {
+            arr = new T[_defaultCapacity];
+        }
+        public List(int capacity)
+        {
+            _capacity = capacity;
+            arr = new T[_capacity];
+        }
+
         public T this[int index]
         {
             set
