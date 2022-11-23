@@ -27,7 +27,7 @@ namespace Mizu
 		public bool Contains(T value)
 		{
 			if (Count < 0)
-				throw new Exception("Stack이 비어 있습니다.");
+				return false;
 
 			for (int i = 0; i < Count; i++)
 				if (EqualityComparer<T>.Default.Equals(arr[i], value))
@@ -47,10 +47,10 @@ namespace Mizu
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 		public IEnumerator<T> GetEnumerator()
 		{
-			if (Count < 0)
-				throw new Exception("Stack이 비어 있습니다.");
+			//if (Count < 0)
+			//	throw new Exception("Stack이 비어 있습니다.");
 
-			for (int i = 0; i < Count; i++)
+			for (int i = _index; i >= 0; --i) 
 				yield return arr[i];
 		}
 

@@ -17,9 +17,10 @@ namespace Mizu
             // Hi
             Log(str);
 
-            stack.Push("My name is : ");
-            stack.Push("Mizu!");
-            // Hello. My name is : Mizu!
+            stack.Push("I");
+            stack.Push("Luv");
+            stack.Push("U");
+            // U, Luv, I, Hello
             stack.LogValues();
         }
     }

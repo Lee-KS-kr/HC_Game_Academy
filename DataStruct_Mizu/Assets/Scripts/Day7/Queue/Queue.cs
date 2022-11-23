@@ -31,8 +31,8 @@ namespace Mizu
 
         public bool Contains(T value)
         {
-            if (Count < 0)
-                throw new Exception("Queue에 데이터가 없습니다.");
+            if (Count <= 0) // 0이면 False를 반환하는 것이 적합하다.
+                return false;
 
             for (int i = 0; i < Count; i++)
                 if (EqualityComparer<T>.Default.Equals(value, arr[i]))
@@ -44,8 +44,8 @@ namespace Mizu
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         public IEnumerator<T> GetEnumerator()
         {
-            if (Count < 0)
-                throw new Exception("Queue에 데이터가 없습니다.");
+            //if (Count <= 0) // 0이면 반환할 필요가 없다.
+            //    throw new Exception("Queue에 데이터가 없습니다.");
 
             for (int i=0;i<Count;i++)
                 yield return arr[(i + _front) % _capacity];
@@ -61,13 +61,15 @@ namespace Mizu
             //if(!value.GetType().IsValueType)
             //    if (EqualityComparer<T>.Default.Equals(value, default(T)))
             //        throw new Exception("null값은 추가할 수 없습니다.");
+            // Null은 value이고, 비어있는 포인터. 변수는 값이다.
+            // 확고한 이유가 있어서 null이 들어오면 안되는 자료구조가 아닌 한 Enqueue에서 null을 신경 쓸 필요는 없다.
 
             if (Count == _capacity)
                 Expand();
 
             ++_rear;
             arr[_rear] = value;
-            if (_rear > _capacity)
+            if (_rear >= _capacity)
                 _rear %= _capacity;
 
             ++Count;
@@ -99,7 +101,7 @@ namespace Mizu
                 arr[i] = default(T);
 
             _front = 0;
-            _rear = 0;
+            _rear = -1;
             Count = 0;
         }
         internal void Expand()
