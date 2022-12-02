@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,8 @@ namespace Mizu
 
         [SerializeField] private Animator _animator;
         [SerializeField] private CameraShake _camera;
+        [SerializeField] private AudioClip _shoot;
+        [SerializeField] private AudioClip _reload;
 
         private HumanBodyBones _bones = HumanBodyBones.Spine;
         [SerializeField] private Collider _target = null;
@@ -23,7 +26,7 @@ namespace Mizu
         private int _attackCount = 0;
         private float _moveSpeed = -1f;
         private float _playerSight = 5f;
-        [SerializeField] private float _attackCool = 0f;
+        private float _attackCool = 0f;
         public int HP { get; set; }
 
         public HpDelegate hpDelegate { get; set; }
@@ -32,6 +35,8 @@ namespace Mizu
         private readonly int hashMoveSpeed = Animator.StringToHash("moveSpeed");
         private readonly int hashIsBulletEmpty = Animator.StringToHash("isBulletEmpty");
         private readonly int hashOnAttack = Animator.StringToHash("onAttack");
+
+        public Action<AudioClip> audioAction;
         #endregion
 
         private void Start()
@@ -53,8 +58,6 @@ namespace Mizu
         {
             if (null == _target || Vector3.Magnitude(transform.position - _target.transform.position) > _playerSight) return; // 비교 대상도 같이 제곱을 해 줘야한다.
             _spine.LookAt(_target.transform.position + Vector3.up, Vector3.up); // 이미 여기서 타겟이 있기 때문에 여기에서 캐싱하는 방법도 있다
-            //var dir = _target.transform.position - _spine.transform.position;
-            //_spine.rotation = Quaternion.LookRotation(dir, Vector3.up);
         }
 
         private void OnMove()
@@ -80,20 +83,10 @@ namespace Mizu
             }
         }
 
-        private void NewMove()
+        private void NewMove(Vector3 dir)
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-
-            }
-            if (Input.GetMouseButton(0))
-            {
-
-            }
-            if (Input.GetMouseButtonUp(0))
-            {
-
-            }
+            _moveSpeed = Mathf.Clamp(_moveSpeed + Time.deltaTime, 0, 3f);
+            transform.Translate(transform.position + (dir * Time.deltaTime * _moveSpeed));
         }
 
         private void OnAttack()
@@ -104,6 +97,7 @@ namespace Mizu
                 {
                     _animator.SetBool(hashIsBulletEmpty, true);
                     _animator.SetTrigger(hashOnAttack);
+                    audioAction?.Invoke(_reload);
                     _attackCount = 0;
                 }
                 else
@@ -146,12 +140,6 @@ namespace Mizu
             }
         }
 
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(transform.position, _playerSight);
-        }
-
         private void AutoAttack()
         {
             if (_target == null || _attackCool < _attackCoolDown)
@@ -166,6 +154,7 @@ namespace Mizu
                 return;
             }
 
+
             OnFire();
         }
 
@@ -175,7 +164,7 @@ namespace Mizu
             var dir = (_target.transform.position + Vector3.up) - from;
             var ray = new Ray(from, dir);
             var mask = 1 << 6; // 에너미 레이어 6번
-            var damage = Random.Range(10, 21);
+            var damage = UnityEngine.Random.Range(10, 21);
 
             if (!Physics.Raycast(ray, out var hitInfo, _playerSight, mask))
                 return;
@@ -184,14 +173,12 @@ namespace Mizu
             _bullet.gameObject.transform.position = _gun.transform.position;
             _bullet.gameObject.SetActive(true);
 
-            //_bullet.SetDestination(_target.transform.position + Vector3.up);
-            //_bullet.gameObject.transform.position = transform.position + transform.up + transform.forward;
-            //_bullet.gameObject.SetActive(true);
             Debug.Log(hitInfo.collider.gameObject.name);
             var hit = hitInfo.collider.gameObject.GetComponent<Enemy>();
             // 이것을 회피하는 방법은? 내가 쳐다보고 있다는 것은 내가 걔를 알고있다는 의미. 이것을 회피하기 위해서 여러 방법이 있을 수 있다.
             // 예를 들어 한번 수집을 해놓는다던가(딕셔너리에 키와 밸류 등으로... 회피 방법 생각해보기
             hit.OnHit(damage, transform.position);
+            audioAction?.Invoke(_shoot);
 
             _attackCount++;
             _animator.SetTrigger(hashOnAttack);

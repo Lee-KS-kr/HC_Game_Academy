@@ -25,6 +25,7 @@ namespace Mizu
 
         public HpDelegate hpDelegate { get; set; }
         public DieDelegate onDieDelegate { get; set; }
+        public Action<AudioClip> audioAction;
 
         [SerializeField] private Animator _animator;
         [SerializeField] private Collider _collider;
@@ -33,6 +34,8 @@ namespace Mizu
         [SerializeField] private ScreenUI _screen;
         [SerializeField] private GameObject _blood;
         [SerializeField] private GameObject _explosion;
+        [SerializeField] private AudioClip _bloodClip;
+        [SerializeField] private AudioClip _explosionClip;
         private Vector3 _target;
 
         private float _sinkTime = 3f;
@@ -58,8 +61,11 @@ namespace Mizu
             var dir = _target - transform.position;
             _blood.transform.rotation = Quaternion.LookRotation(dir);
             _explosion.transform.position = transform.position + new Vector3(0, 1.3f, 0);
-            _explosion.SetActive(true);
+
+            audioAction?.Invoke(_bloodClip);
             _blood.SetActive(true);
+            audioAction?.Invoke(_explosionClip);
+            _explosion.SetActive(true);
 
             hpDelegate?.Invoke(HP);
         }

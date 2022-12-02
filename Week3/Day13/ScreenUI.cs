@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,6 +22,7 @@ namespace Mizu
                     SetComplete();
             }
         }
+        public Action action;
 
         private void Awake()
         {
@@ -36,7 +38,8 @@ namespace Mizu
 
         private void SetComplete()
         {
-            _finish.SetActive(true);
+            //_finish.SetActive(true);
+            action?.Invoke(); // 이름 변경
         }
     }
 }
